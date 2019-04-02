@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<form id="form1" onsubmit="return false" action="##" method="post">
+    <p>姓名：<input name="name"    type="text" id="txtUserName" tabindex="1" size="15" value=""/></p>
+    <p>学科：<input name="subject" type="text" id="TextBox2" tabindex="2" size="16" value=""/></p>
+    <p>
+        <label>排序：
+            <select name="sort">
+                <option value="0">姓名</option>
+                <option value="1">科目</option>
+                <option value="2">成绩</option>
+            </select>
+        </label>
+    </p>
+
+    <p><input type="button" value="查询" onclick="search()"></p>
+</form>
+
+<table id="list">
+    <tr>
+        <th>id</th>
+        <th>姓名</th>
+        <th>科目</th>
+        <th>分数</th>
+    </tr>
+</table>
+</body>
+</html>
+<script type="text/javascript" src="/webjars/jquery/1.11.3/jquery.js"></script>
+<script>
+
+    let table = $("#list");
+
+    $(document).ready(function () {
+        show();
+    });
+
+    function show() {
+        $.ajax({
+            type:"POST",
+            url:"/start/getStudents",
+            dataType:"json",
+            success:function (data) {
+                for(let i=0;i<data.length;i++)
+                {
+                    let tr;
+                    tr='<td>'+data[i]['id']+'</td>'+'<td>'+data[i]['name']+'</td>'+'<td>'+data[i]['subject']+'</td>'+'<td>'+data[i]['score']+'</td>';
+                    table.append('<tr>'+tr+'</tr>');
+                }
+            }
+        });
+    }
+
+
+    function search() {
+        table.empty();
+        $.ajax({
+            type:"POST",
+            url:"/start/searchStudents",
+            data: $('#form1').serialize(),
+            dataType:"json",
+            success:function (data) {
+                if(0 === data.length)
+                {
+                    table.text("无记录");
+                }
+                for(let i=0;i<data.length;i++)
+                {
+                    let tr;
+                    tr='<td>'+data[i]['id']+'</td>'+'<td>'+data[i]['name']+'</td>'+'<td>'+data[i]['subject']+'</td>'+'<td>'+data[i]['score']+'</td>';
+                    table.append('<tr>'+tr+'</tr>');
+                }
+            }
+        });
+    }
+
+
+
+</script>
+
